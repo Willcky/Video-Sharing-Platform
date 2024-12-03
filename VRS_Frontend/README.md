@@ -129,7 +129,7 @@ This project is licensed under the MIT License.
 
 ## 👥 Authors
 
-- Your Name - Initial work
+- K.C - Initial work
 
 ## 🙏 Acknowledgments
 
