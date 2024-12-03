@@ -1,6 +1,6 @@
 # wiliwili
 
-A modern YouTube clone built with React.js, featuring video playback, search functionality, and user authentication.
+A modern Online Video Platform built with React.js, featuring video playback, search functionality, video Recommendation.
 
 ## 🚀 Features
 
