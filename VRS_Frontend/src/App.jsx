@@ -6,8 +6,9 @@ import { store } from './store';
 import theme from './theme';
 import Layout from './components/layout/Layout';
 import Home from './pages/Home';
-//import Watch from './pages/Watch';
+import Watch from './pages/Watch';
 import Search from './pages/Search';
+import Upload from './pages/Upload';
 
 const App = () => {
   return (
@@ -17,8 +18,9 @@ const App = () => {
           <Layout>
             <Routes>
               <Route path="/" element={<Home />} />
-              {/*<Route path="/watch/:videoId" element={<Watch />} />*/}
+              <Route path="/watch/:videoId" element={<Watch />} />
               <Route path="/search/:searchQuery" element={<Search />} />
+              <Route path="/upload" element={<Upload />} />
             </Routes>
           </Layout>
         </Router>

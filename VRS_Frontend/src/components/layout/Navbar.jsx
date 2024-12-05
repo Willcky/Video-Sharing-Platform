@@ -141,7 +141,7 @@ const Navbar = () => {
         </SearchForm>
 
         <RightSection>
-          <StyledIconButton>
+          <StyledIconButton onClick={() => navigate('/upload')}>
             <VideoCallIcon />
           </StyledIconButton>
           <StyledIconButton>

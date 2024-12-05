@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import ReactPlayer from 'react-player';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -30,5 +31,9 @@ const VideoPlayer = ({ url, onProgress, onEnded }) => {
     </PlayerWrapper>
   );
 };
-
+VideoPlayer.propTypes = {
+  url: PropTypes.string.isRequired,
+  onProgress: PropTypes.func,
+  onEnded: PropTypes.func
+};
 export default VideoPlayer; 
