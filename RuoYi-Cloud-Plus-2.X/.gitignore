@@ -11,7 +11,7 @@ sql/
 config/
 ######################################################################
 # IDE
-
+ruoyi-visual/
 ### STS ###
 .apt_generated
 .classpath
