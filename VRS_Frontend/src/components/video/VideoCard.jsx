@@ -16,8 +16,8 @@ const StyledCard = styled(Card)(() => ({
     maxWidth: '100%',
     boxShadow: 'none',
     backgroundColor: 'transparent',
-    transform: 'scale(1.1)', // Make card bigger
-    transformOrigin: 'top center',
+    transform: 'scale(0.95)',
+    transformOrigin: 'center top',
   }));
   
   const StyledCardMedia = styled(CardMedia)(() => ({
@@ -27,11 +27,11 @@ const StyledCard = styled(Card)(() => ({
     '&:hover': {
       cursor: 'pointer',
     },
-    borderRadius: 8, // Add rounded corners
+    borderRadius: 8,
   }));
   
   const StyledCardContent = styled(CardContent)(({ theme }) => ({
-    padding: theme.spacing(1.5, 0), // Increase padding
+    padding: theme.spacing(1, 0),
     '&:last-child': {
       paddingBottom: 0,
     },
@@ -51,6 +51,7 @@ const StyledCard = styled(Card)(() => ({
   
   const VideoInfoContainer = styled('div')({
     flex: 1,
+    minWidth: 0, // This helps with text truncation
   });
   
   const VideoTitle = styled(Typography)(({ theme }) => ({
@@ -61,16 +62,23 @@ const StyledCard = styled(Card)(() => ({
     '-webkit-line-clamp': 2,
     '-webkit-box-orient': 'vertical',
     overflow: 'hidden',
+    fontSize: '0.95rem',
   }));
   
   const ChannelName = styled(Typography)(({ theme }) => ({
     color: theme.palette.text.secondary,
-    fontSize: '0.9rem',
+    fontSize: '0.85rem',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   }));
   
   const VideoStats = styled(Typography)(({ theme }) => ({
     color: theme.palette.text.secondary,
-    fontSize: '0.9rem',
+    fontSize: '0.85rem',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   }));
   
   const VideoCard = ({ video }) => {

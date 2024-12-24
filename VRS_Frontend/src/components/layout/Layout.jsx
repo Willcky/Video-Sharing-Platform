@@ -14,12 +14,19 @@ const LayoutWrapper = styled(Box)({
 
 const MainContent = styled(Box)(({ hasCategories }) => ({
   flex: 1,
-  marginTop: hasCategories ? '112px' : '64px',
+  marginTop: hasCategories ? '112px' : hasCategories === false ? '64px' : 0,
 }));
 
 const Layout = ({ children }) => {
   const location = useLocation();
-  const shouldHideCategories = location.pathname.startsWith('/watch/') || location.pathname.startsWith('/upload');
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
+  const shouldHideCategories = location.pathname.startsWith('/watch/') || 
+                             location.pathname.startsWith('/upload') || 
+                             isAuthPage;
+
+  if (isAuthPage) {
+    return <LayoutWrapper>{children}</LayoutWrapper>;
+  }
 
   return (
     <LayoutWrapper>

@@ -1,0 +1,18 @@
+# FFmpeg Configuration
+ffmpeg:
+  # FFmpeg executable path
+  ffmpeg-path: ffmpeg
+  # FFprobe executable path
+  ffprobe-path: ffprobe
+  # Output directory for transcoded files
+  output-path: videos/transcoded
+  # Temporary directory for processing
+  temp-path: videos/temp
+  # HLS segment duration in seconds
+  hls-time: 10
+  # HLS playlist size (0 means keep all segments)
+  hls-list-size: 0
+  # Video bitrates for different qualities (in kbps)
+  video-bitrates: [800, 1400, 2800]  # 480p, 720p, 1080p
+  # Video resolutions (height in pixels)
+  video-resolutions: [480, 720, 1080] 
