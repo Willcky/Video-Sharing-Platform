@@ -1,13 +1,17 @@
 package org.dromara.video.domain.message;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Video Transcode Message
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class VideoTranscodeMessage {
 
     /**
@@ -34,4 +38,4 @@ public class VideoTranscodeMessage {
      * Original file name
      */
     private String fileName;
-} 
+}

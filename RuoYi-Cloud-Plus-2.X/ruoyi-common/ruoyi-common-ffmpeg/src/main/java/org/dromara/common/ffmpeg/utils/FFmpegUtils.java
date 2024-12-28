@@ -45,19 +45,21 @@ public class FFmpegUtils {
         }
     }
 
+
+
     /**
      * Convert video to HLS format with multiple quality levels
      *
      * @param inputPath Input video file path
-     * @param outputDir Output directory for HLS files
+     * @param videoFileId video file id
      * @return List of generated m3u8 playlist paths
      */
-    public List<String> convertToHls(String inputPath, String outputDir) {
+    public List<String> convertToHls(String inputPath, Long videoFileId) {
         try {
             if (ffmpeg == null || ffprobe == null) {
                 init();
             }
-
+            String outputDir = config.getOutputPath() + File.separator + videoFileId;
             // Create output directory if it doesn't exist
             Files.createDirectories(Paths.get(outputDir));
 
@@ -66,11 +68,11 @@ public class FFmpegUtils {
             int originalHeight = probeResult.getStreams().get(0).height;
 
             List<String> playlistPaths = new ArrayList<>();
-            
+
             // Create variants for different qualities
             for (int i = 0; i < config.getVideoResolutions().length; i++) {
                 int targetHeight = config.getVideoResolutions()[i];
-                
+
                 // Skip if target resolution is higher than original
                 if (targetHeight > originalHeight) {
                     continue;
@@ -143,4 +145,4 @@ public class FFmpegUtils {
         }
         return targetHeight * 16 / 9; // Default to 16:9 aspect ratio
     }
-} 
+}

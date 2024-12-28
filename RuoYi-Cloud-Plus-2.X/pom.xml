@@ -48,7 +48,7 @@
         <!-- 临时修复 fastjson 漏洞 -->
         <fastjson.version>1.2.83</fastjson.version>
 
-        <!-- OSS 配置 -->
+        <!-- OSS ��置 -->
         <aws.sdk.version>2.28.22</aws.sdk.version>
         <aws.crt.version>0.31.3</aws.crt.version>
 
@@ -339,7 +339,7 @@
                 <version>${sms4j.version}</version>
             </dependency>
 
-            <!-- 离线IP地址定位库 ip2region -->
+            <!-- 离���IP地址定位库 ip2region -->
             <dependency>
                 <groupId>org.lionsoul</groupId>
                 <artifactId>ip2region</artifactId>
@@ -376,7 +376,7 @@
     </dependencyManagement>
 
     <modules>
-        <module>ruoyi-auth</module>
+
         <module>ruoyi-gateway</module>
 
         <module>ruoyi-modules</module>
@@ -506,6 +506,22 @@
                 <enabled>true</enabled>
             </releases>
         </repository>
+        <repository>
+            <id>central</id>
+            <name>maven central</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>aliyun</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -519,6 +535,22 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>central</id>
+            <name>maven central</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+        <pluginRepository>
+            <id>aliyun</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </pluginRepository>
     </pluginRepositories>
 

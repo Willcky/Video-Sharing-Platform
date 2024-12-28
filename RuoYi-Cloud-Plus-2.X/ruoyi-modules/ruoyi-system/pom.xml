@@ -105,12 +105,7 @@
             <artifactId>ruoyi-api-resource</artifactId>
         </dependency>
 
-        <!-- VRS Video Module -->
-        <dependency>
-            <groupId>org.dromara</groupId>
-            <artifactId>vrs-video</artifactId>
-            <version>${revision}</version>
-        </dependency>
+
 
     </dependencies>
 

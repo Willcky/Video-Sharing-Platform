@@ -7,6 +7,7 @@ import org.dromara.common.core.domain.R;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.video.domain.dto.VideoUploadDTO;
 import org.dromara.video.service.IVideoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,4 +35,4 @@ public class VideoController {
         videoService.uploadVideo(uploadDTO, userId);
         return R.ok();
     }
-} 
+}

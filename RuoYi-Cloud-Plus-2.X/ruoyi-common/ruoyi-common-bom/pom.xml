@@ -257,6 +257,13 @@
                 <version>${revision}</version>
             </dependency>
 
+            <!-- ffmpeg -->
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-common-ffmpeg</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 </project>

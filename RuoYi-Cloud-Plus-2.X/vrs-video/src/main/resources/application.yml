@@ -119,24 +119,24 @@ spring:
 video:
   storage:
     # 本地存储路径
-    local-path: E://temp
+    local-path: /Users/willcky/temp
     # 临时文件目录
     temp-path: ${video.storage.local-path}/temp
     # 视频文件目录
-    video-path: ${video.storage.local-path}/videos
+    video-path: ${video.storage.local-path}/videos/waitTranscoding
     # 视频截图目录
     cover-path: ${video.storage.local-path}/covers
 
 # FFmpeg Configuration
 ffmpeg:
   # FFmpeg executable path (update this to your actual FFmpeg installation path)
-  ffmpeg-path: E:/ffmpeg/bin/ffmpeg.exe
+  ffmpeg-path: /opt/homebrew/bin/ffmpeg
   # FFprobe executable path
-  ffprobe-path: E:/ffmpeg/bin/ffprobe.exe
+  ffprobe-path: /opt/homebrew/bin/ffprobe
   # Output directory for transcoded files
-  output-path: E:/temp/videos/transcoded
+  output-path: ${video.storage.local-path}/temp/videos/transcoded
   # Temporary directory for processing
-  temp-path: E:/temp/videos/temp
+  temp-path: ${video.storage.local-path}/temp
   # HLS segment duration in seconds
   hls-time: 10
   # HLS playlist size (0 means keep all segments)
@@ -145,3 +145,10 @@ ffmpeg:
   video-bitrates: [800, 1400, 2800]  # 480p, 720p, 1080p
   # Video resolutions (height in pixels)
   video-resolutions: [480, 720, 1080]
+
+spring:
+  servlet:
+    multipart:
+      location: ${video.storage.temp-path}
+      max-file-size: 30MB
+      max-request-size: 30MB

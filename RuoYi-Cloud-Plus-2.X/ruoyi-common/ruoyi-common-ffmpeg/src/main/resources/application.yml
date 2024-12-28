@@ -1,13 +1,12 @@
-# FFmpeg Configuration
 ffmpeg:
-  # FFmpeg executable path
-  ffmpeg-path: ffmpeg
+  # FFmpeg executable path (update this to your actual FFmpeg installation path)
+  ffmpeg-path: /opt/homebrew/bin/ffmpeg
   # FFprobe executable path
-  ffprobe-path: ffprobe
+  ffprobe-path: /opt/homebrew/bin/ffprobe
   # Output directory for transcoded files
-  output-path: videos/transcoded
+  output-path: /Users/willcky/temp/videos/transcoded
   # Temporary directory for processing
-  temp-path: videos/temp
+  temp-path: /Users/willcky/temp
   # HLS segment duration in seconds
   hls-time: 10
   # HLS playlist size (0 means keep all segments)
@@ -15,4 +14,4 @@ ffmpeg:
   # Video bitrates for different qualities (in kbps)
   video-bitrates: [800, 1400, 2800]  # 480p, 720p, 1080p
   # Video resolutions (height in pixels)
-  video-resolutions: [480, 720, 1080] 
+  video-resolutions: [480, 720, 1080]

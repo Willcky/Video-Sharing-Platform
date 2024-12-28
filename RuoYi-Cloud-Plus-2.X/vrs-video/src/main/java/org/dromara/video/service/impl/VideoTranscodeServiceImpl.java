@@ -4,6 +4,9 @@ import com.alibaba.fastjson.JSON;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.exception.ServiceException;
+import org.dromara.common.ffmpeg.utils.FFmpegUtils;
+import org.dromara.common.oss.core.OssClient;
+import org.dromara.common.oss.factory.OssFactory;
 import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.video.config.RedisChannelConfig;
 import org.dromara.video.domain.entity.SysVideo;
@@ -13,7 +16,11 @@ import org.dromara.video.domain.message.VideoTranscodeMessage;
 import org.dromara.video.mapper.SysVideoFileMapper;
 import org.dromara.video.mapper.SysVideoMapper;
 import org.dromara.video.service.IVideoTranscodeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Video Transcode Service Implementation
@@ -23,16 +30,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class VideoTranscodeServiceImpl implements IVideoTranscodeService {
 
-    private final RedisUtils redisUtils;
+
     private final SysVideoMapper videoMapper;
     private final SysVideoFileMapper videoFileMapper;
+
+    private final FFmpegUtils fFmpegUtils;
 
     @Override
     public void sendToTranscode(VideoTranscodeMessage message) {
         try {
-            String jsonMessage = JSON.toJSONString(message);
-            redisUtils.publish(RedisChannelConfig.VIDEO_TRANSCODE_CHANNEL, jsonMessage);
-            log.info("Sent video to transcode queue: {}", jsonMessage);
+            RedisUtils.publish(RedisChannelConfig.VIDEO_TRANSCODE_CHANNEL, message);
+            log.info("Sent video to transcode queue: {}", JSON.toJSONString(message));
         } catch (Exception e) {
             log.error("Error sending video to transcode queue: ", e);
             throw new ServiceException("发送转码任务失败");
@@ -76,7 +84,8 @@ public class VideoTranscodeServiceImpl implements IVideoTranscodeService {
             // 2. Transcoding to different resolutions
             // 3. Saving transcoded files
             // 4. Updating status on completion
-
+            List<String> videoList = fFmpegUtils.convertToHls(message.getSourceFilePath(), message.getVideoFileId());
+            updateStatusToSuccess(message.getVideoId(), message.getVideoFileId(), videoList);
         } catch (Exception e) {
             log.error("Error handling transcode message: ", e);
             // Update status to transcode failed
@@ -84,7 +93,8 @@ public class VideoTranscodeServiceImpl implements IVideoTranscodeService {
         }
     }
 
-    private void updateStatusToFailed(Long videoId, Long videoFileId) {
+
+    public void updateStatusToFailed(Long videoId, Long videoFileId) {
         try {
             SysVideo video = new SysVideo();
             video.setId(videoId);
@@ -94,6 +104,23 @@ public class VideoTranscodeServiceImpl implements IVideoTranscodeService {
             SysVideoFile videoFile = new SysVideoFile();
             videoFile.setId(videoFileId);
             videoFile.setStatus(VideoStatus.TRANSCODE_FAILED.getCode());
+            videoFileMapper.updateById(videoFile);
+        } catch (Exception e) {
+            log.error("Error updating failed status: ", e);
+        }
+    }
+
+    public void updateStatusToSuccess(Long videoId, Long videoFileId, List<String> videoList) {
+        try {
+            SysVideo video = new SysVideo();
+            video.setId(videoId);
+            video.setStatus(VideoStatus.TRANSCODED.getCode());
+            videoMapper.updateById(video);
+
+            SysVideoFile videoFile = new SysVideoFile();
+            videoFile.setId(videoFileId);
+            videoFile.setFilePath(String.join(",", videoList));
+            videoFile.setStatus(VideoStatus.TRANSCODED.getCode());
             videoFileMapper.updateById(videoFile);
         } catch (Exception e) {
             log.error("Error updating failed status: ", e);

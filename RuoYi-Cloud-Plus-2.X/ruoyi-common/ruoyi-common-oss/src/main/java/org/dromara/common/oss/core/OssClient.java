@@ -35,6 +35,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * S3 存储协议 所有兼容S3协议的云厂商均支持
@@ -100,7 +101,7 @@ public class OssClient {
                     .build())
                 .build();
 
-            //AWS基于 CRT 的 S3 AsyncClient 实例用作 S3 传输管理器的底层客户端
+            //AWS CRT 的 S3 AsyncClient 实例用作 S3 传输管理器的底层客户端
             this.transferManager = S3TransferManager.builder().s3Client(this.client).build();
 
             // 创建 S3 配置对象
@@ -214,7 +215,7 @@ public class OssClient {
      * @throws OssException 如果上传失败，抛出自定义异常
      */
     public UploadResult upload(InputStream inputStream, String key, Long length, String contentType) {
-        // 如果输入流不是 ByteArrayInputStream，则将其读取为字节数组再创建 ByteArrayInputStream
+        // 如果输入流不是 ByteArrayInputStream，则将其读取为字数组创建 ByteArrayInputStream
         if (!(inputStream instanceof ByteArrayInputStream)) {
             inputStream = new ByteArrayInputStream(IoUtil.readBytes(inputStream));
         }
@@ -238,7 +239,7 @@ public class OssClient {
                             .build())
                     .build());
 
-            // 将输入流写入请求体
+            // 将输入流写入求
             body.writeInputStream(inputStream);
 
             // 等待文件上传操作完成
@@ -404,7 +405,7 @@ public class OssClient {
     public String getEndpoint() {
         // 根据配置文件中的是否使用 HTTPS，设置协议头部
         String header = getIsHttps();
-        // 拼接协议头部和终端点，得到完整的终端点 URL
+        // 拼接协议头部和终端��，得到完整的终端点 URL
         return header + properties.getEndpoint();
     }
 
@@ -507,7 +508,7 @@ public class OssClient {
     /**
      * 获取是否使用 HTTPS 的配置，并返回相应的协议头部。
      *
-     * @return 协议头部，根据是否使用 HTTPS 返回 "https://" 或 "http://"
+     * @return 协议头部，根据是否��用 HTTPS 返回 "https://" 或 "http://"
      */
     public String getIsHttps() {
         return OssConstant.IS_HTTPS.equals(properties.getIsHttps()) ? Constants.HTTPS : Constants.HTTP;
@@ -600,6 +601,49 @@ public class OssClient {
                 """;
         };
         return policy.replaceAll("bucketName", bucketName);
+    }
+
+    /**
+     * Upload a directory using S3TransferManager for efficient parallel transfer
+     *
+     * @param localDirectory The local directory path to upload
+     * @param ossPrefix The prefix path in OSS where files will be uploaded to (can be null or empty)
+     * @return DirectoryUpload object containing the upload status and results
+     * @throws OssException if upload fails
+     */
+    public DirectoryUpload uploadDirectoryTransfer(String localDirectory, String ossPrefix) {
+        File dir = new File(localDirectory);
+        if (!dir.exists() || !dir.isDirectory()) {
+            throw new IllegalArgumentException("Directory does not exist or is not a directory: " + localDirectory);
+        }
+
+        String prefix = StringUtils.isNotBlank(ossPrefix) ? ossPrefix + "/" : "";
+
+        UploadDirectoryRequest uploadDirectoryRequest = UploadDirectoryRequest.builder()
+            .source(dir.toPath())
+            .bucket(properties.getBucketName())
+            .s3Prefix(prefix)
+            .build();
+
+        return transferManager.uploadDirectory(uploadDirectoryRequest);
+    }
+
+    /**
+     * Upload a directory using S3TransferManager and wait for completion
+     *
+     * @param localDirectory The local directory path to upload
+     * @param ossPrefix The prefix path in OSS where files will be uploaded to (can be null or empty)
+     * @return CompletedDirectoryUpload containing the results of the upload
+     * @throws OssException if upload fails
+     */
+    public CompletedDirectoryUpload uploadDirectoryTransferAndWait(String localDirectory, String ossPrefix) {
+        try {
+            DirectoryUpload directoryUpload = uploadDirectoryTransfer(localDirectory, ossPrefix);
+            // Wait for the upload to complete and return the result
+            return directoryUpload.completionFuture().join();
+        } catch (Exception e) {
+            throw new OssException("Failed to upload directory: " + e.getMessage());
+        }
     }
 
 }

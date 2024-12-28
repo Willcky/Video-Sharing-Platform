@@ -89,13 +89,16 @@ public class VideoServiceImpl implements IVideoService {
         } catch (IOException e) {
             log.error("Error uploading video: ", e);
             throw new ServiceException("视频上传失败");
+        } catch (Exception e) {
+            log.error("Error uploading video: ", e);
+            throw new ServiceException("视频上传失败");
         }
     }
 
     /**
      * Save thumbnail file and return its relative path
      */
-    private String saveThumbnail(MultipartFile thumbnailFile, Long videoId) throws IOException {
+    private String saveThumbnail(MultipartFile thumbnailFile, Long videoId) throws Exception {
         String extension = getFileExtension(thumbnailFile.getOriginalFilename());
         String fileName = videoId + "_thumb." + extension;
         String relativePath = generateRelativePath(fileName);
@@ -113,11 +116,14 @@ public class VideoServiceImpl implements IVideoService {
     /**
      * Save video file and its metadata
      */
-    private SysVideoFile saveVideoFile(MultipartFile file, SysVideo video, Long userId) throws IOException {
+    private SysVideoFile saveVideoFile(MultipartFile file, SysVideo video, Long userId) throws Exception {
         String extension = getFileExtension(file.getOriginalFilename());
         String fileName = video.getId() + "." + extension;
         String relativePath = generateRelativePath(fileName);
         String absolutePath = storageConfig.getVideoPath() + File.separator + relativePath;
+
+        // Get file size before transferring
+        long fileSize = file.getSize();
 
         // Create directories if they don't exist
         FileUtil.mkdir(new File(absolutePath).getParentFile());
@@ -131,8 +137,8 @@ public class VideoServiceImpl implements IVideoService {
         videoFile.setVideoId(video.getId());
         videoFile.setUserId(userId);
         videoFile.setFileName(file.getOriginalFilename());
-        videoFile.setFilePath(relativePath);
-        videoFile.setFileSize(file.getSize());
+        videoFile.setFilePath(absolutePath);
+        videoFile.setFileSize(fileSize);  // Use the size we got earlier
         videoFile.setFileType(extension);
         videoFile.setStorageType(0); // Local storage
         videoFile.setStatus(VideoStatus.PENDING_TRANSCODE.getCode());
@@ -147,7 +153,7 @@ public class VideoServiceImpl implements IVideoService {
      * Generate relative storage path using date-based directory structure
      */
     private String generateRelativePath(String fileName) {
-        return fileName + IdUtil.getSnowflakeNextId();
+        return IdUtil.getSnowflakeNextId() + fileName;
     }
 
     private void validateVideoFile(MultipartFile file) {
