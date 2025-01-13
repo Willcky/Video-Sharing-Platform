@@ -77,7 +77,7 @@ public class SysVideo {
     /**
      * Duration in seconds
      */
-    private Integer duration;
+    private Long duration;
 
     /**
      * Status (0:published 1:reviewing 2:offline 3:transcoding 4:transcode_failed 5:uploaded 6:pending_transcode)
@@ -103,4 +103,4 @@ public class SysVideo {
      * Remark
      */
     private String remark;
-} 
+}

@@ -3,21 +3,18 @@ package org.dromara.video.service;
 import org.dromara.video.domain.message.VideoTranscodeMessage;
 
 /**
- * Video Transcode Service Interface
+ * Video transcode service interface
  */
 public interface IVideoTranscodeService {
 
     /**
-     * Send video to transcoding queue
-     *
-     * @param message Transcode message
+     * Send video to transcode queue
      */
     void sendToTranscode(VideoTranscodeMessage message);
 
     /**
-     * Handle transcoding message
-     *
-     * @param message Transcode message
+     * Handle transcode messages from queue
+     * This method runs in a loop and should be called by a single consumer
      */
-    void handleTranscodeMessage(VideoTranscodeMessage message);
+    void handleTranscodeMessage();
 } 

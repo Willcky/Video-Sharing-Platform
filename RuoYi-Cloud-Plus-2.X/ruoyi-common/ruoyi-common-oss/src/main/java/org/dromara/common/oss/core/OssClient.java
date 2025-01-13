@@ -405,7 +405,7 @@ public class OssClient {
     public String getEndpoint() {
         // 根据配置文件中的是否使用 HTTPS，设置协议头部
         String header = getIsHttps();
-        // 拼接协议头部和终端��，得到完整的终端点 URL
+        // 拼接协议头部和终端点，得到完整的终端点 URL
         return header + properties.getEndpoint();
     }
 
@@ -508,7 +508,7 @@ public class OssClient {
     /**
      * 获取是否使用 HTTPS 的配置，并返回相应的协议头部。
      *
-     * @return 协议头部，根据是否��用 HTTPS 返回 "https://" 或 "http://"
+     * @return 协议头部，根据是否使用 HTTPS 返回 "https://" 或 "http://"
      */
     public String getIsHttps() {
         return OssConstant.IS_HTTPS.equals(properties.getIsHttps()) ? Constants.HTTPS : Constants.HTTP;
@@ -636,11 +636,35 @@ public class OssClient {
      * @return CompletedDirectoryUpload containing the results of the upload
      * @throws OssException if upload fails
      */
-    public CompletedDirectoryUpload uploadDirectoryTransferAndWait(String localDirectory, String ossPrefix) {
+//    public CompletedDirectoryUpload uploadDirectoryTransferAndWait(String localDirectory, String ossPrefix) {
+//        try {
+//            DirectoryUpload directoryUpload = uploadDirectoryTransfer(localDirectory, ossPrefix);
+//            // Wait for the upload to complete and return the result
+//            return directoryUpload.completionFuture().join();
+//        } catch (Exception e) {
+//            throw new OssException("Failed to upload directory: " + e.getMessage());
+//        }
+//    }
+
+    /**
+     * Upload directory and wait for completion, returns master M3U8 URL
+     *
+     * @param localDirectory Local directory path
+     * @param ossPrefix OSS prefix path
+     * @return Master M3U8 URL
+     */
+    public String uploadDirectoryTransferAndWait(String localDirectory, String ossPrefix) {
         try {
-            DirectoryUpload directoryUpload = uploadDirectoryTransfer(localDirectory, ossPrefix);
-            // Wait for the upload to complete and return the result
-            return directoryUpload.completionFuture().join();
+            CompletedDirectoryUpload result = uploadDirectoryTransfer(localDirectory, ossPrefix).completionFuture().join();
+
+            // Check if upload was successful
+            if (result.failedTransfers().isEmpty()) {
+                //log.info("Upload completed successfully. Total files uploaded: {}", result.completedUploads().size());
+                return getUrl() + StringUtils.SLASH + ossPrefix + StringUtils.SLASH + "master.m3u8";
+            } else {
+                //log.error("Upload failed. Failed uploads: {}", result.failedUploads().size());
+                throw new OssException("Some files failed to upload");
+            }
         } catch (Exception e) {
             throw new OssException("Failed to upload directory: " + e.getMessage());
         }

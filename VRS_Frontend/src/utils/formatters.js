@@ -1,9 +1,14 @@
-export const formatViewCount = (views) => {
-  if (views >= 1000000) {
-    return `${(views / 1000000).toFixed(1)}M`;
+export const formatViewCount = (count) => {
+  if (count === undefined || count === null) return '0';
+  
+  const num = Number(count);
+  if (isNaN(num)) return '0';
+
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
   }
-  if (views >= 1000) {
-    return `${(views / 1000).toFixed(1)}K`;
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
   }
-  return views.toString();
+  return num.toString();
 }; 

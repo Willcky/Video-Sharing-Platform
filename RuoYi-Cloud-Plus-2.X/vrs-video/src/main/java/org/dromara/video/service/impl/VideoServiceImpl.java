@@ -3,28 +3,40 @@ package org.dromara.video.service.impl;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.exception.ServiceException;
+import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.mybatis.core.page.PageQuery;
+import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.video.config.VideoStorageConfig;
+import org.dromara.video.domain.bo.VideoDetailBO;
 import org.dromara.video.domain.dto.VideoUploadDTO;
 import org.dromara.video.domain.entity.SysVideo;
 import org.dromara.video.domain.entity.SysVideoFile;
 import org.dromara.video.domain.enums.VideoStatus;
 import org.dromara.video.domain.message.VideoTranscodeMessage;
+import org.dromara.video.domain.vo.VideoDetailVO;
+import org.dromara.video.domain.vo.VideoVO;
 import org.dromara.video.mapper.SysVideoFileMapper;
 import org.dromara.video.mapper.SysVideoMapper;
 import org.dromara.video.service.IVideoService;
 import org.dromara.video.service.IVideoTranscodeService;
+import org.dromara.video.service.IVideoViewCountService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.dromara.system.api.RemoteUserService;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 /**
  * Video Service Implementation
@@ -38,6 +50,7 @@ public class VideoServiceImpl implements IVideoService {
     private final SysVideoFileMapper videoFileMapper;
     private final VideoStorageConfig storageConfig;
     private final IVideoTranscodeService transcodeService;
+    private final IVideoViewCountService viewCountService;
 
     private static final String[] ALLOWED_VIDEO_TYPES = {".mp4", ".webm", ".avi", ".mov"};
     private static final String[] ALLOWED_IMAGE_TYPES = {".jpg", ".jpeg", ".png"};
@@ -65,7 +78,6 @@ public class VideoServiceImpl implements IVideoService {
         video.setStatus(VideoStatus.PENDING_TRANSCODE.getCode());
         video.setCreateTime(LocalDateTime.now());
         video.setUpdateTime(LocalDateTime.now());
-
         try {
             // Save thumbnail
             String thumbnailPath = saveThumbnail(thumbnailFile, video.getId());
@@ -110,7 +122,7 @@ public class VideoServiceImpl implements IVideoService {
         // Save the thumbnail
         thumbnailFile.transferTo(new File(absolutePath));
 
-        return relativePath;
+        return absolutePath;
     }
 
     /**
@@ -198,4 +210,19 @@ public class VideoServiceImpl implements IVideoService {
         String ext = "." + extension.toLowerCase();
         return Arrays.asList(allowedTypes).contains(ext);
     }
+
+    @Override
+    public TableDataInfo<VideoVO> queryPageList(PageQuery pageQuery) {
+        Page<VideoVO> page = videoMapper.selectVideoList(pageQuery.build());
+        return TableDataInfo.build(page);
+    }
+
+    @Override
+    public VideoDetailVO getVideoDetail(Long id) {
+        VideoDetailBO detailBO = videoMapper.selectVideoDetail(id);
+        viewCountService.increaseViewCount(1L);
+        return detailBO != null ? detailBO.toVO() : null;
+    }
+
+
 }

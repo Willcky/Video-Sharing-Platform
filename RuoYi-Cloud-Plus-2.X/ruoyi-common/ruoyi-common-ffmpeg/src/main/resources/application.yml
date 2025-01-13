@@ -1,12 +1,12 @@
 ffmpeg:
   # FFmpeg executable path (update this to your actual FFmpeg installation path)
-  ffmpeg-path: /opt/homebrew/bin/ffmpeg
+  ffmpeg-path: E:\ffmpeg-7.1-full_build\bin\ffmpeg.exe
   # FFprobe executable path
-  ffprobe-path: /opt/homebrew/bin/ffprobe
+  ffprobe-path: E:\ffmpeg-7.1-full_build\bin\ffprobe.exe
   # Output directory for transcoded files
-  output-path: /Users/willcky/temp/videos/transcoded
+  output-path: E:\transcoded
   # Temporary directory for processing
-  temp-path: /Users/willcky/temp
+  temp-path: E:\temp
   # HLS segment duration in seconds
   hls-time: 10
   # HLS playlist size (0 means keep all segments)

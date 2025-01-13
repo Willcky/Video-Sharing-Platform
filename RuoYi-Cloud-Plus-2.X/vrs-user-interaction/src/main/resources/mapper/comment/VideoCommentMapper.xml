@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dromara.interaction.mapper.VideoCommentMapper">
+
+    <resultMap id="VideoCommentVoResult" type="org.dromara.interaction.domain.vo.VideoCommentVo">
+        <id property="commentId" column="comment_id"/>
+        <result property="pCommentId" column="p_comment_id"/>
+        <result property="videoId" column="video_id"/>
+        <result property="content" column="content"/>
+        <result property="imgPath" column="img_path"/>
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="avatar" column="avatar"/>
+        <result property="replyUserId" column="reply_user_id"/>
+        <result property="replyUserName" column="reply_user_name"/>
+        <result property="postTime" column="post_time"/>
+        <result property="hateCount" column="hate_count"/>
+        <result property="commentCount" column="comment_count"/>
+        <result property="likeCount" column="like_count"/>
+    </resultMap>
+
+    <!-- 获取一级评论列表 -->
+    <select id="selectFirstLevelComments" resultMap="VideoCommentVoResult">
+        SELECT 
+            c.*,
+            u.user_name,
+            u.avatar,
+            ru.user_name AS reply_user_name
+        FROM video_comment c
+        LEFT JOIN sys_user u ON c.user_id = u.user_id AND u.del_flag = 0
+        LEFT JOIN sys_user ru ON c.reply_user_id = ru.user_id AND ru.del_flag = 0
+        WHERE c.video_id = #{videoId}
+        AND c.del_flag = 0
+        AND c.p_comment_id IS NULL
+        ORDER BY c.post_time DESC
+    </select>
+
+    <!-- 获取回复评论列表 -->
+    <select id="selectReplyComments" resultMap="VideoCommentVoResult">
+        SELECT 
+            c.*,
+            u.user_name,
+            u.avatar,
+            ru.user_name AS reply_user_name
+        FROM video_comment c
+        LEFT JOIN sys_user u ON c.user_id = u.user_id AND u.del_flag = 0
+        LEFT JOIN sys_user ru ON c.reply_user_id = ru.user_id AND ru.del_flag = 0
+        WHERE c.p_comment_id = #{commentId}
+        AND c.del_flag = 0
+        ORDER BY c.post_time ASC
+    </select>
+
+    <update id="incrementCommentCount">
+        UPDATE video_comment 
+        SET comment_count = comment_count + 1 
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <update id="incrementHateCount">
+        UPDATE video_comment 
+        SET hate_count = hate_count + 1 
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <update id="decrementHateCount">
+        UPDATE video_comment 
+        SET hate_count = hate_count - 1 
+        WHERE comment_id = #{commentId}
+        AND hate_count > 0
+    </update>
+
+    <update id="incrementLikeCount">
+        UPDATE video_comment 
+        SET like_count = like_count + 1 
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <update id="decrementLikeCount">
+        UPDATE video_comment 
+        SET like_count = like_count - 1 
+        WHERE comment_id = #{commentId}
+        AND like_count > 0
+    </update>
+</mapper> 

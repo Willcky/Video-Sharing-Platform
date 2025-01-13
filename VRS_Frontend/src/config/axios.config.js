@@ -23,10 +23,18 @@ axiosInstance.interceptors.request.use(
 
 // Add response interceptor
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Check if response body contains error code 401
+    if (response.data && response.data.code === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+      return Promise.reject(new Error(response.data.msg || 'Unauthorized'));
+    }
+    return response;
+  },
   (error) => {
-    if (error.response?.status === 401) {
-      // Handle unauthorized access
+    if (error.response?.status === 401 || (error.response?.data && error.response.data.code === 401)) {
+      // Handle unauthorized access from either HTTP status or response body
       localStorage.removeItem('token');
       window.location.href = '/login';
     }

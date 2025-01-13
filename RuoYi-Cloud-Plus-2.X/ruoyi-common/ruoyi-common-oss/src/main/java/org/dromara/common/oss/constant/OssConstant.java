@@ -30,7 +30,7 @@ public interface OssConstant {
     /**
      * 云服务商
      */
-    String[] CLOUD_SERVICE = new String[] {"AWS"};
+    String[] CLOUD_SERVICE = new String[] {"s3"};
 
     /**
      * https 状态

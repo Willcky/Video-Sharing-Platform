@@ -17,7 +17,10 @@ public enum VideoStatus {
     TRANSCODE_FAILED(4, "转码失败"),
     UPLOADED(5, "已上传"),
     PENDING_TRANSCODE(6, "待转码"),
-    TRANSCODED(7, "转码完成");
+    TRANSCODED(7, "转码完成"),
+    PENDING_UPLOAD(8, "待上传"),
+    UPLOADING(9, "上传中"),
+    UPLOAD_FAILED(10, "上传失败");
 
     private final Integer code;
     private final String info;

@@ -26,6 +26,7 @@ public class PushMessageController {
     @Autowired
     private KafkaNormalProducer normalKafkaProducer;
 
+
     /**
      * rabbitmq 普通消息
      */

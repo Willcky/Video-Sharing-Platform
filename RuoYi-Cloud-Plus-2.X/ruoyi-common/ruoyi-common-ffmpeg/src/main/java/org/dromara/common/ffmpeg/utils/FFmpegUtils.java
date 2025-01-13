@@ -9,6 +9,7 @@ import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import net.bramp.ffmpeg.probe.FFmpegProbeResult;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.ffmpeg.config.FFmpegConfig;
+import org.dromara.common.ffmpeg.domain.VideoTransResult;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -54,7 +55,7 @@ public class FFmpegUtils {
      * @param videoFileId video file id
      * @return List of generated m3u8 playlist paths
      */
-    public List<String> convertToHls(String inputPath, Long videoFileId) {
+    public VideoTransResult convertToHls(String inputPath, Long videoFileId) {
         try {
             if (ffmpeg == null || ffprobe == null) {
                 init();
@@ -66,9 +67,9 @@ public class FFmpegUtils {
             // Get video information
             FFmpegProbeResult probeResult = ffprobe.probe(inputPath);
             int originalHeight = probeResult.getStreams().get(0).height;
-
+            long durations = Math.round(probeResult.getFormat().duration);
             List<String> playlistPaths = new ArrayList<>();
-
+            List<String> resolutions = new ArrayList<>();
             // Create variants for different qualities
             for (int i = 0; i < config.getVideoResolutions().length; i++) {
                 int targetHeight = config.getVideoResolutions()[i];
@@ -77,7 +78,7 @@ public class FFmpegUtils {
                 if (targetHeight > originalHeight) {
                     continue;
                 }
-
+                resolutions.add(targetHeight + "p");
                 String variantDir = outputDir + File.separator + targetHeight + "p";
                 Files.createDirectories(Paths.get(variantDir));
 
@@ -105,8 +106,8 @@ public class FFmpegUtils {
 
             // Create master playlist
             createMasterPlaylist(outputDir, playlistPaths, config.getVideoResolutions());
-
-            return playlistPaths;
+            VideoTransResult videoTransResult = new VideoTransResult(outputDir, resolutions, durations);
+            return videoTransResult;
 
         } catch (IOException e) {
             log.error("Failed to convert video to HLS: ", e);
@@ -139,10 +140,20 @@ public class FFmpegUtils {
      * Calculate video width based on height while maintaining aspect ratio
      */
     private int calculateWidth(int targetHeight, FFmpegProbeResult probeResult) {
+        int width;
         if (probeResult != null) {
             double aspectRatio = (double) probeResult.getStreams().get(0).width / probeResult.getStreams().get(0).height;
-            return (int) (targetHeight * aspectRatio);
+            width = (int) Math.round(targetHeight * aspectRatio);
+        } else {
+            // Fallback to 16:9
+            width = targetHeight * 16 / 9;
         }
-        return targetHeight * 16 / 9; // Default to 16:9 aspect ratio
+
+        // Ensure width is an even number
+        if (width % 2 != 0) {
+            width -= 1; // or width += 1, as long as it becomes even
+        }
+
+        return width;
     }
 }

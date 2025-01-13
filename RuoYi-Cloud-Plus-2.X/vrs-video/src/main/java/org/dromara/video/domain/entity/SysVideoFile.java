@@ -62,7 +62,7 @@ public class SysVideoFile {
     /**
      * Duration in seconds
      */
-    private Integer duration;
+    private Long duration;
 
     /**
      * Storage type (0:local 1:AWS)
@@ -83,4 +83,4 @@ public class SysVideoFile {
      * Update time
      */
     private LocalDateTime updateTime;
-} 
+}

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dromara.interaction.mapper.UserActionMapper">
+
+    <resultMap id="UserActionVoResult" type="org.dromara.interaction.domain.vo.UserActionVo">
+        <result property="commentId" column="comment_id"/>
+        <result property="actionType" column="action_type"/>
+        <result property="videoId" column="video_id"/>
+        <result property="userId" column="user_id"/>
+    </resultMap>
+
+    <!-- 获取用户对视频的所有操作 -->
+    <select id="selectUserActions" resultMap="UserActionVoResult">
+        SELECT
+            comment_id,
+            action_type,
+            video_id,
+            user_id
+        FROM user_action
+        WHERE user_id = #{userId}
+        AND video_id = #{videoId}
+    </select>
+
+</mapper>
