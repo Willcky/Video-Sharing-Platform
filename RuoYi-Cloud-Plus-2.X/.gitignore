@@ -46,7 +46,7 @@ nbdist/
 !*/build/*.xml
 
 .flattened-pom.xml
-
-docker/
+/config/nacos
+/docker/
 
 ./ruoyi-visual/ruoyi-nacos/src/main/resources/application.properties
